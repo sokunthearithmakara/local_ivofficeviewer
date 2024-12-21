@@ -51,8 +51,6 @@ class main extends \ivplugin_richtext\main {
      * @return string The content.
      */
     public function get_content($arg) {
-        global $CFG;
-        $lang = current_language();
         $fs = get_file_storage();
         $files = $fs->get_area_files($arg["contextid"], 'mod_interactivevideo', 'public', $arg["id"], 'id DESC', false);
         $file = reset($files);

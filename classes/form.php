@@ -33,11 +33,17 @@ class form extends \mod_interactivevideo\form\base_form {
 
         $data = $this->set_data_default();
 
-        require_once($CFG->libdir . '/filelib.php');
+        require_once("{$CFG->libdir}/filelib.php");
 
         // Load the file in the draft area. mod_interactive, content.
         $draftitemid = file_get_submitted_draft_itemid('content');
-        file_prepare_draft_area($draftitemid, $data->contextid, 'mod_interactivevideo', 'content', $data->id);
+        file_prepare_draft_area(
+            $draftitemid,
+            $data->contextid,
+            'mod_interactivevideo',
+            'content',
+            $data->id
+        );
 
         $data->content = $draftitemid;
 

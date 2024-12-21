@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['officefile'] = 'Office file';
-$string['officeviewercontent'] = 'Office document viewer';
+$string['officeviewercontent'] = 'Office document';
 $string['officeviewerdescription'] = 'Display office documents such as Word, Excel, and PowerPoint.';
 $string['officeviewerpublicfilewarning'] = 'This file will be processed by an online office viewer. Please make sure the file is safe to open.';
-$string['pluginname'] = 'Office document viewer';
+$string['pluginname'] = 'Office document';
