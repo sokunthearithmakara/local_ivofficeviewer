@@ -30,3 +30,4 @@ $string['officeviewercontent'] = 'Office document';
 $string['officeviewerdescription'] = 'Display office documents such as Word, Excel, and PowerPoint.';
 $string['officeviewerpublicfilewarning'] = 'This file will be processed by an online office viewer. Please make sure the file is safe to open.';
 $string['pluginname'] = 'Office document';
+$string['tutorialurl'] = 'https://www.youtube.com/watch?v=dBR7MGdeEgg';

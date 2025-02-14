@@ -106,7 +106,7 @@ class form extends \mod_interactivevideo\form\base_form {
             'maxbytes'       => $PAGE->course->maxbytes,
             'subdirs'        => 0,
             'maxfiles'       => 1,
-            'accepted_types' => '.odt .docx .doc .odp .pptx .ppt .csv .xlsm .xlsx .xls .ods',
+            'accepted_types' => '.odt .docx .doc .odp .pptx .ppt .xlsm .xlsx .xls .ods',
         ];
 
         $mform->addElement(
@@ -132,7 +132,9 @@ class form extends \mod_interactivevideo\form\base_form {
         $this->xp_form_field();
         $mform->hideIf('xp', 'completiontracking', 'eq', 'none');
         $this->display_options_field();
-        $this->advanced_form_fields(true, true, true, true);
+        $this->advanced_form_fields([
+            'hascompletion' => true,
+        ]);
         $this->close_form();
     }
 }
