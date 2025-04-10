@@ -93,6 +93,6 @@ class main extends \ivplugin_richtext\main {
             }
         }
         return '<iframe id="iframe" src="https://view.officeapps.live.com/op/embed.aspx?src=' .
-            $url . '" style="width: 100%; height: 100%" frameborder="0" allow="autoplay" class="rounded-0"></iframe>';
+            $url . '" style="width: 100%; height: 100%" frameborder="0" allow="autoplay" class="iv-rounded-0"></iframe>';
     }
 }
