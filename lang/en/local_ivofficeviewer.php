@@ -19,15 +19,25 @@
  *
  * @package    local_ivofficeviewer
  * @category   string
- * @copyright  2024 YOUR NAME <your@email.com>
+ * @copyright  2024 Sokunthearith Makara <sokunthearithmakara@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['externalurl'] = 'External URL (public)';
+$string['fbdescription'] = 'Display an Office document (Word, Excel, PowerPoint)';
+$string['invalidurl'] = 'Please enter a valid URL (starting with http:// or https://)';
+$string['nofile'] = 'No file found. It seems that the file has been deleted.';
 $string['officefile'] = 'Office file';
 $string['officeviewercontent'] = 'Office document';
 $string['officeviewerdescription'] = 'Display office documents such as Word, Excel, and PowerPoint.';
 $string['officeviewerpublicfilewarning'] = 'This file will be processed by an online office viewer. Please make sure the file is safe to open.';
 $string['pluginname'] = 'Office document';
+$string['sourcefile'] = 'Local office file';
+$string['sourcetype'] = 'Source type';
+$string['sourceurl'] = 'External URL (public)';
 $string['tutorialurl'] = 'https://www.youtube.com/watch?v=dBR7MGdeEgg';
+$string['viewergoogledrive'] = 'Google Drive viewer';
+$string['vieweroffice365'] = 'Office 365 viewer';
+$string['viewertype'] = 'Viewer';

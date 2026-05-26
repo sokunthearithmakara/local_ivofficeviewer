@@ -15,23 +15,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe file uninstall
+ * Uninstall script for officeviewer.
  *
  * @package    local_ivofficeviewer
  * @copyright  2024 Sokunthearith Makara <sokunthearithmakara@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 /**
  * Uninstall function for the local_ivofficeviewer plugin.
  *
  * @return bool Always returns true.
  */
 function xmldb_local_ivofficeviewer_uninstall() {
-    $config = get_config('mod_interactivevideo', 'enablecontenttypes');
-    $config = explode(',', $config);
+    $config = array_filter(explode(',', get_config('mod_interactivevideo', 'enablecontenttypes') ?: ''));
     $config = array_diff($config, ['local_ivofficeviewer']);
-    // Save the new configuration.
     set_config('enablecontenttypes', implode(',', $config), 'mod_interactivevideo');
+
+    if (get_config('mod_flexbook', 'version')) {
+        $config = array_filter(explode(',', get_config('mod_flexbook', 'enablecontenttypes') ?: ''));
+        $config = array_diff($config, ['local_ivofficeviewer']);
+        set_config('enablecontenttypes', implode(',', $config), 'mod_flexbook');
+    }
 
     return true;
 }

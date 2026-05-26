@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Callback implementations for officeviewer.
+ * Upgrade script for officeviewer.
  *
  * @package    local_ivofficeviewer
  * @copyright  2024 Sokunthearith Makara <sokunthearithmakara@gmail.com>
@@ -23,25 +23,21 @@
  */
 
 /**
- * Provides plugin information for ivofficeviewer.
+ * Upgrade callback for local_ivofficeviewer.
  *
- * @return array Plugin information.
+ * @param int $oldversion The currently installed version.
+ * @return bool
  */
-function local_ivofficeviewer_ivplugin() {
-    return [
-        'class' => 'local_ivofficeviewer\\main',
-        'name' => 'officeviewer',
-    ];
-}
+function xmldb_local_ivofficeviewer_upgrade($oldversion) {
+    if ($oldversion < 2026052600) {
+        if (get_config('mod_flexbook', 'version')) {
+            $config = array_filter(explode(',', get_config('mod_flexbook', 'enablecontenttypes') ?: ''));
+            $config[] = 'local_ivofficeviewer';
+            set_config('enablecontenttypes', implode(',', array_unique($config)), 'mod_flexbook');
+        }
 
-/**
- * Provides plugin information for ivofficeviewer.
- *
- * @return array Plugin information.
- */
-function local_ivofficeviewer_fbplugin() {
-    return [
-        'class' => 'local_ivofficeviewer\\main',
-        'name' => 'officeviewer',
-    ];
+        upgrade_plugin_savepoint(true, 2026052600, 'local', 'ivofficeviewer');
+    }
+
+    return true;
 }

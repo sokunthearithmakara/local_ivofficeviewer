@@ -43,7 +43,98 @@ class main extends \ivplugin_richtext\main {
             'authorlink' => 'mailto:sokunthearithmakara@gmail.com',
             'tutorial' => get_string('tutorialurl', 'local_ivofficeviewer'),
             'preloadstrings' => false,
+            'flexbook' => true,
+            'fbdescription' => get_string('fbdescription', 'local_ivofficeviewer'),
+            'fbamdmodule' => 'local_ivofficeviewer/fbmain',
+            'fbform' => 'local_ivofficeviewer\\fbform',
+            'dndextensions' => ['odt', 'docx', 'doc', 'odp', 'pptx', 'ppt', 'xlsm', 'xlsx', 'xls', 'ods'],
+            'component' => 'local_ivofficeviewer',
         ];
+    }
+
+    /**
+     * Create a new interaction instance.
+     *
+     * @param array $data The data for the new instance.
+     * @return \stdClass The newly created interaction record.
+     */
+    public function create_instance($data) {
+        global $DB, $CFG;
+        $data = (object) $data;
+        $draftitemid = $data->draftitemid;
+        unset($data->draftitemid);
+        $data->char2 = helper::VIEWER_OFFICE365;
+
+        // Form a default advanced settings.
+        if (empty($data->advanced)) {
+            $data->advanced = $this->flexbook_advanced();
+            $data->advanced = json_encode($data->advanced);
+        }
+
+        $data->id = $DB->insert_record('flexbook_items', $data);
+
+        // Save files from draft area.
+        if ($draftitemid) {
+            require_once($CFG->libdir . '/filelib.php');
+            \file_save_draft_area_files(
+                $draftitemid,
+                $data->contextid,
+                'mod_flexbook',
+                'content',
+                $data->id,
+                ['subdirs' => 0, 'maxfiles' => 1]
+            );
+        }
+
+        return \mod_flexbook\util::get_item($data->id, $data->contextid);
+    }
+
+    /**
+     * Resolves the document URL for the selected source.
+     *
+     * @param array $arg The arguments.
+     * @return string
+     */
+    protected function resolve_document_url($arg) {
+        $iframeurl = helper::normalize_iframeurl($arg['iframeurl'] ?? '');
+        if (!empty($iframeurl)) {
+            return $iframeurl;
+        }
+
+        $plugin = 'mod_' . (isset($arg['plugin']) ? $arg['plugin'] : 'interactivevideo');
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($arg['contextid'], $plugin, 'public', $arg['id'], 'id DESC', false);
+        $file = reset($files);
+
+        if (!$file) {
+            // Copy file from 'content' to 'public' area.
+            $files = $fs->get_area_files($arg['contextid'], $plugin, 'content', $arg['id'], 'id DESC', false);
+            $file = reset($files);
+            if ($file) {
+                $fileinfo = [
+                    'contextid' => $file->get_contextid(),
+                    'component' => $plugin,
+                    'filearea' => 'public',
+                    'itemid' => $file->get_itemid(),
+                    'filepath' => '/',
+                    'filename' => $file->get_filename(),
+                ];
+                $file = $fs->create_file_from_storedfile($fileinfo, $file);
+            }
+        }
+
+        if (!$file) {
+            return '';
+        }
+
+        return \moodle_url::make_pluginfile_url(
+            $file->get_contextid(),
+            $file->get_component(),
+            $file->get_filearea(),
+            $file->get_itemid(),
+            $file->get_filepath(),
+            $file->get_filename(),
+        )->out();
     }
 
     /**
@@ -53,47 +144,15 @@ class main extends \ivplugin_richtext\main {
      * @return string The content.
      */
     public function get_content($arg) {
-        $fs = get_file_storage();
-        $files = $fs->get_area_files($arg["contextid"], 'mod_interactivevideo', 'public', $arg["id"], 'id DESC', false);
-        $file = reset($files);
-        if ($file) {
-            $url = \moodle_url::make_pluginfile_url(
-                $file->get_contextid(),
-                $file->get_component(),
-                $file->get_filearea(),
-                $file->get_itemid(),
-                $file->get_filepath(),
-                $file->get_filename(),
-            )->out();
-            // Encode URL for PDF.js.
-            $url = urlencode($url);
-        } else {
-            // Copy file from 'content' to 'public' area.
-            $files = $fs->get_area_files($arg["contextid"], 'mod_interactivevideo', 'content', $arg["id"], 'id DESC', false);
-            $file = reset($files);
-            if ($file) {
-                $fileinfo = [
-                    'contextid' => $file->get_contextid(),
-                    'component' => 'mod_interactivevideo',
-                    'filearea' => 'public',
-                    'itemid' => $file->get_itemid(),
-                    'filepath' => '/',
-                    'filename' => $file->get_filename(),
-                ];
-                $newfile = $fs->create_file_from_storedfile($fileinfo, $file);
-                $url = \moodle_url::make_pluginfile_url(
-                    $newfile->get_contextid(),
-                    $newfile->get_component(),
-                    $newfile->get_filearea(),
-                    $newfile->get_itemid(),
-                    $newfile->get_filepath(),
-                    $newfile->get_filename(),
-                )->out();
-                // Encode URL.
-                $url = urlencode($url);
-            }
+        $documenturl = $this->resolve_document_url($arg);
+        if (empty($documenturl)) {
+            return '<div class="alert alert-danger" role="alert">' . get_string('nofile', 'local_ivofficeviewer') . '</div>';
         }
-        return '<iframe id="iframe" src="https://view.officeapps.live.com/op/embed.aspx?src=' .
-            $url . '" style="width: 100%; height: 100%" frameborder="0" allow="autoplay" class="iv-rounded-0"></iframe>';
+
+        $viewer = helper::normalize_viewer($arg['char2'] ?? '');
+        $embedurl = helper::build_viewer_embed_url($documenturl, $viewer);
+
+        return '<iframe id="iframe" src="' . s($embedurl) .
+            '" style="width: 100%; height: 100%" frameborder="0" allow="autoplay" class="iv-rounded-0"></iframe>';
     }
 }

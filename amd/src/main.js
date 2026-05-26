@@ -25,6 +25,14 @@ import $ from 'jquery';
 import Iframe from 'ivplugin_iframe/main';
 export default class OfficeViewer extends Iframe {
     /**
+     * Called when the edit form is loaded.
+     * @return {void}
+     */
+    onEditFormLoaded() {
+        // Do nothing.
+    }
+
+    /**
      * Renders the container for the given annotation.
      *
      * @param {Object} annotation - The annotation object.
