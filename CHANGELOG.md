@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3+] - 2026-06-08
+
+- Require Interactive Video 1.8.1+ (2026060800).
+
 ## [1.3] - 2026-05-26
 
 - Added Flexbook support with drag-and-drop for office document types.

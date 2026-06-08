@@ -26,12 +26,12 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component    = 'local_ivofficeviewer';
 $plugin->release      = '1.3';
-$plugin->version      = 2026052600;
+$plugin->version      = 2026060800;
 $plugin->requires     = 2021112800;
 $plugin->supported    = [400, 502];
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->dependencies = [
-    'interactivevideo' => 2026052603,
+    'interactivevideo' => 2026060800,
     'ivplugin_richtext' => 2024071500,
     'ivplugin_iframe' => 2024071500,
 ];
