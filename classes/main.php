@@ -53,6 +53,33 @@ class main extends \ivplugin_richtext\main {
     }
 
     /**
+     * Flexbook DND / programmatic creation fields merged from flexbook_defaults.
+     *
+     * @return string[]
+     */
+    public function get_dnd_default_fields(): array {
+        return array_merge(parent::get_dnd_default_fields(), ['char2']);
+    }
+
+    /**
+     * Apply completion and advanced defaults after DND merge.
+     *
+     * @param \stdClass $data
+     * @return void
+     */
+    protected function apply_creation_defaults(\stdClass $data): void {
+        $courseid = (int) ($data->courseid ?? 0);
+        if (!$this->has_flexbook_course_defaults($courseid, 'officeviewer')) {
+            $data->advanced = json_encode($this->flexbook_advanced());
+        } else {
+            $this->normalize_merged_completion($data);
+            if (empty($data->advanced)) {
+                $data->advanced = json_encode($this->flexbook_advanced());
+            }
+        }
+    }
+
+    /**
      * Create a new interaction instance.
      *
      * @param array $data The data for the new instance.
@@ -63,12 +90,11 @@ class main extends \ivplugin_richtext\main {
         $data = (object) $data;
         $draftitemid = $data->draftitemid;
         unset($data->draftitemid);
-        $data->char2 = helper::VIEWER_OFFICE365;
 
-        // Form a default advanced settings.
-        if (empty($data->advanced)) {
-            $data->advanced = $this->flexbook_advanced();
-            $data->advanced = json_encode($data->advanced);
+        $this->apply_creation_defaults($data);
+
+        if (!$this->has_flexbook_course_defaults((int) ($data->courseid ?? 0), 'officeviewer')) {
+            $data->char2 = helper::VIEWER_OFFICE365;
         }
 
         $data->id = $DB->insert_record('flexbook_items', $data);
